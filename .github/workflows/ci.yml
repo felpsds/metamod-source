@@ -1,13 +1,13 @@
 name: Continuous Integration
-on: 
+on:
   push:
     branches:
       - master
-      - '[0-9]+.[0-9]+-dev'
+      - "[0-9]+.[0-9]+-dev"
   pull_request:
     branches:
       - master
-      - '[0-9]+.[0-9]+-dev'
+      - "[0-9]+.[0-9]+-dev"
 jobs:
   test:
     strategy:
@@ -40,7 +40,7 @@ jobs:
         with:
           submodules: recursive
           path: metamod-source
-      
+
       - name: Select HL2SDKs
         run: echo 'SDKS=["episode1","tf2","l4d2","cs2","insurgency"]' >> $GITHUB_ENV
 
@@ -97,6 +97,11 @@ jobs:
           cd build
           python ../configure.py --enable-optimize --sdks=${{ join(fromJSON(env.SDKS)) }} --hl2sdk-root=${{ env.DEPENDENCIES_ROOT }}
           ambuild
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os_short }}-${{ matrix.compiler_cc }}-build
+          path: metamod-source/build/
 
       - name: Test SourceHook (Optimized)
         working-directory: metamod-source
